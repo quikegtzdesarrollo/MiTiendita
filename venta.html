@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiTienda - Venta</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-top">
+        <div>
+          <h1>MiTienda</h1>
+          <p class="subtitle">Módulo Venta</p>
+        </div>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="main-menu" aria-label="Abrir menú">☰</button>
+      </div>
+    </header>
+
+    <nav class="menu" id="main-menu">
+      <ul>
+        <li><a href="index.html" class="menu-link">Inicio</a></li>
+        <li><a href="club.html" class="menu-link">Club</a></li>
+        <li><a href="folios.html" class="menu-link">Folios</a></li>
+        <li><a href="reparticion.html" class="menu-link">Repartición</a></li>
+        <li><a href="staff.html" class="menu-link">Staff</a></li>
+        <li><a href="venta.html" class="menu-link active">Venta</a></li>
+      </ul>
+    </nav>
+
+    <main class="content">
+      <section class="page-head">
+        <div class="page-head-row">
+          <div>
+            <h2 class="page-title">Venta</h2>
+            <p class="lead">Captura folios y confirma la compra asociada.</p>
+          </div>
+          <button class="icon-btn" data-modal-target="#modal-venta" aria-label="Nuevo">＋</button>
+        </div>
+      </section>
+
+      <section>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Creado</th></tr>
+            </thead>
+            <tbody id="tbody-venta"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div class="modal" id="modal-venta" aria-hidden="true">
+      <div class="modal-backdrop" data-modal-close></div>
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-venta-title">
+        <div class="modal-header">
+          <h3 id="modal-venta-title">Nueva Venta</h3>
+          <button class="icon-btn icon-btn--ghost" data-modal-close aria-label="Cerrar">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="section-form">
+            <h3>Captura de folios</h3>
+            <div class="form-group">
+              <label for="venta-club">Club (opcional)</label>
+              <input type="text" id="venta-club" name="idClub" placeholder="Busca un club" list="club-list" autocomplete="off">
+              <datalist id="club-list"></datalist>
+            </div>
+            <div class="form-group">
+              <label for="venta-folio-num">Folio</label>
+              <input type="number" id="venta-folio-num" name="NumFolio" placeholder="Número de folio">
+            </div>
+            <div class="inline-actions">
+              <button type="button" class="btn btn-primary" id="btn-capturar-folio">Capturar folio</button>
+              <button type="button" class="btn btn-secondary" id="btn-qr">Escanear QR</button>
+              <button type="button" class="btn btn-secondary" id="btn-stop-qr" disabled>Detener cámara</button>
+            </div>
+            <div class="qr-preview" id="qr-preview">
+              <video id="qr-video" playsinline></video>
+              <canvas id="qr-canvas" class="sr-only"></canvas>
+            </div>
+            <div class="folio-status">
+              <p class="status-label">Valor</p>
+              <p class="status-value" id="folio-valor">--</p>
+              <p class="status-message" id="folio-mensaje"></p>
+            </div>
+            <div class="inline-actions">
+              <button type="button" class="btn btn-primary" id="btn-aceptar-folio" disabled>Aceptar</button>
+              <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
+            </div>
+          </div>
+
+          <div class="section-form">
+            <h3>Folios en compra</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Folio</th><th>Valor</th></tr>
+                </thead>
+                <tbody id="tbody-folios-compra"></tbody>
+              </table>
+            </div>
+            <div class="inline-actions">
+              <button type="button" class="btn btn-primary" id="btn-confirmar-compra" disabled>Confirmar compra</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>MiTienda &copy; 2025</p>
+    </footer>
+  </div>
+
+  <!-- Supabase: configura js/config.js para activar persistencia -->
+  <script src="js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/venta.js"></script>
+</body>
+</html>

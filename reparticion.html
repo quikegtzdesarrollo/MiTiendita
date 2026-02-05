@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiTienda - Repartición</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-top">
+        <div>
+          <h1>MiTienda</h1>
+          <p class="subtitle">Módulo Repartición</p>
+        </div>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="main-menu" aria-label="Abrir menú">☰</button>
+      </div>
+    </header>
+
+    <nav class="menu" id="main-menu">
+      <ul>
+        <li><a href="index.html" class="menu-link">Inicio</a></li>
+        <li><a href="club.html" class="menu-link">Club</a></li>
+        <li><a href="folios.html" class="menu-link">Folios</a></li>
+        <li><a href="reparticion.html" class="menu-link active">Repartición</a></li>
+        <li><a href="staff.html" class="menu-link">Staff</a></li>
+        <li><a href="venta.html" class="menu-link">Venta</a></li>
+      </ul>
+    </nav>
+
+    <main class="content">
+      <section class="page-head">
+        <div class="page-head-row">
+          <div>
+            <h2 class="page-title">Repartición</h2>
+            <p class="lead">Registra la relación entre staff y folios asignados.</p>
+          </div>
+          <button class="icon-btn" data-modal-target="#modal-reparticion" aria-label="Nuevo">＋</button>
+        </div>
+      </section>
+
+      <section>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Creado</th></tr>
+            </thead>
+            <tbody id="tbody-reparticion"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div class="modal" id="modal-reparticion" aria-hidden="true">
+      <div class="modal-backdrop" data-modal-close></div>
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-reparticion-title">
+        <div class="modal-header">
+          <h3 id="modal-reparticion-title">Nueva Repartición</h3>
+          <button class="icon-btn icon-btn--ghost" data-modal-close aria-label="Cerrar">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="section-form">
+            <h3>Nueva Repartición</h3>
+            <form id="form-reparticion">
+              <div class="form-group">
+                <label for="rep-staff">Staff</label>
+                <div class="form-row">
+                  <input type="text" id="rep-staff" name="IdStaff" placeholder="Busca un staff" list="staff-list" autocomplete="off" required>
+                  <button type="button" class="btn btn-secondary" id="btn-nuevo-staff">Nuevo staff</button>
+                </div>
+                <datalist id="staff-list"></datalist>
+              </div>
+              <div class="form-group">
+                <label for="rep-folio-num">Folio</label>
+                <input type="number" id="rep-folio-num" name="NumFolio" placeholder="Número de folio" required>
+              </div>
+              <div class="inline-actions">
+                <button type="button" class="btn btn-primary" id="btn-capturar-folio-rep">Capturar folio</button>
+                <button type="button" class="btn btn-secondary" id="btn-qr-rep">Escanear QR</button>
+                <button type="button" class="btn btn-secondary" id="btn-stop-qr-rep" disabled>Detener cámara</button>
+              </div>
+              <div class="qr-preview" id="qr-preview-rep">
+                <video id="qr-video-rep" playsinline></video>
+                <canvas id="qr-canvas-rep" class="sr-only"></canvas>
+              </div>
+              <div class="folio-status">
+                <p class="status-label">Valor</p>
+                <p class="status-value" id="folio-valor-rep">--</p>
+                <p class="status-message" id="folio-mensaje-rep"></p>
+              </div>
+              <button type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>MiTienda &copy; 2025</p>
+    </footer>
+  </div>
+
+  <!-- Supabase: configura js/config.js para activar persistencia -->
+  <script src="js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/reparticion.js"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiTienda - Staff</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-top">
+        <div>
+          <h1>MiTienda</h1>
+          <p class="subtitle">Módulo Staff</p>
+        </div>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="main-menu" aria-label="Abrir menú">☰</button>
+      </div>
+    </header>
+
+    <nav class="menu" id="main-menu">
+      <ul>
+        <li><a href="index.html" class="menu-link">Inicio</a></li>
+        <li><a href="club.html" class="menu-link">Club</a></li>
+        <li><a href="folios.html" class="menu-link">Folios</a></li>
+        <li><a href="reparticion.html" class="menu-link">Repartición</a></li>
+        <li><a href="staff.html" class="menu-link active">Staff</a></li>
+        <li><a href="venta.html" class="menu-link">Venta</a></li>
+      </ul>
+    </nav>
+
+    <main class="content">
+      <section class="page-head">
+        <div class="page-head-row">
+          <div>
+            <h2 class="page-title">Staff</h2>
+            <p class="lead">Gestiona el personal y su información base.</p>
+          </div>
+          <button class="icon-btn" data-modal-target="#modal-staff" aria-label="Nuevo">＋</button>
+        </div>
+      </section>
+
+      <section>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Nombre</th><th>Creado</th></tr>
+            </thead>
+            <tbody id="tbody-staff"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div class="modal" id="modal-staff" aria-hidden="true">
+      <div class="modal-backdrop" data-modal-close></div>
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-staff-title">
+        <div class="modal-header">
+          <h3 id="modal-staff-title">Nuevo Staff</h3>
+          <button class="icon-btn icon-btn--ghost" data-modal-close aria-label="Cerrar">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="section-form">
+            <h3>Nuevo Staff</h3>
+            <form id="form-staff">
+              <div class="form-group">
+                <label for="staff-nombre">Nombre</label>
+                <input type="text" id="staff-nombre" name="Nombre" placeholder="Nombre">
+              </div>
+              <button type="submit" class="btn btn-primary" id="btn-guardar-staff">Guardar</button>
+              <p class="form-status" id="staff-status" role="status" aria-live="polite"></p>
+            </form>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>MiTienda &copy; 2025</p>
+    </footer>
+  </div>
+
+  <!-- Supabase: configura js/config.js para activar persistencia -->
+  <script src="js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/staff.js"></script>
+</body>
+</html>

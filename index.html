@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiTienda - Gestión</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-top">
+        <div>
+          <h1>MiTienda</h1>
+          <p class="subtitle">Panel de Gestión</p>
+        </div>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="main-menu" aria-label="Abrir menú">☰</button>
+      </div>
+    </header>
+
+    <nav class="menu" id="main-menu">
+      <ul>
+        <li><a href="index.html" class="menu-link active">Inicio</a></li>
+        <li><a href="club.html" class="menu-link">Club</a></li>
+        <li><a href="folios.html" class="menu-link">Folios</a></li>
+        <li><a href="reparticion.html" class="menu-link">Repartición</a></li>
+        <li><a href="staff.html" class="menu-link">Staff</a></li>
+        <li><a href="venta.html" class="menu-link">Venta</a></li>
+      </ul>
+    </nav>
+
+    <main class="content" id="main-content">
+      <section class="page-head">
+        <h2 class="page-title">Panel de Gestión</h2>
+        <p class="lead">Accede a cada módulo de forma independiente para administrar la información.</p>
+      </section>
+
+      <section class="card-grid">
+        <article class="card">
+          <h3>Club</h3>
+          <p>Administra los clubes disponibles y sus datos principales.</p>
+          <a class="card-link" href="club.html">Ir a Club</a>
+        </article>
+        <article class="card">
+          <h3>Folios</h3>
+          <p>Controla los folios de venta y su historial.</p>
+          <a class="card-link" href="folios.html">Ir a Folios</a>
+        </article>
+        <article class="card">
+          <h3>Repartición</h3>
+          <p>Registra la relación entre staff y folios asignados.</p>
+          <a class="card-link" href="reparticion.html">Ir a Repartición</a>
+        </article>
+        <article class="card">
+          <h3>Staff</h3>
+          <p>Gestiona el personal y su información base.</p>
+          <a class="card-link" href="staff.html">Ir a Staff</a>
+        </article>
+        <article class="card">
+          <h3>Venta</h3>
+          <p>Consulta y registra nuevas ventas por club.</p>
+          <a class="card-link" href="venta.html">Ir a Venta</a>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>MiTienda &copy; 2025</p>
+    </footer>
+  </div>
+
+  <!-- Supabase: configura js/config.js para activar persistencia -->
+  <script src="js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/nav.js"></script>
+</body>
+</html>
