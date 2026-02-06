@@ -4,6 +4,7 @@
  */
 (function () {
   var folioActual = null;
+  var foliosPendientes = [];
   var stream = null;
   var scanActive = false;
 
@@ -39,14 +40,37 @@
       list.innerHTML = '';
       staff.forEach(function (s) {
         var opt = document.createElement('option');
-        opt.value = String(s.idStaff);
-        opt.label = s.Nombre || ('Staff ' + s.idStaff);
-        opt.setAttribute('data-name', normalizeText(s.Nombre));
+        var nombre = s.Nombre || ('Staff ' + s.idStaff);
+        opt.value = nombre;
+        opt.setAttribute('data-id', String(s.idStaff));
+        opt.setAttribute('data-name', normalizeText(nombre));
         list.appendChild(opt);
       });
     }).catch(function (err) {
       console.error('Staff list:', err);
     });
+  }
+  function syncStaffId(inputStaff, hiddenId) {
+    if (!inputStaff || !hiddenId) return;
+    var val = inputStaff.value;
+    if (!val) {
+      hiddenId.value = '';
+      return;
+    }
+    var numeric = parseInt(val, 10);
+    if (!isNaN(numeric) && String(numeric) === String(val).trim()) {
+      hiddenId.value = String(numeric);
+      return;
+    }
+    var normalized = normalizeText(val);
+    var options = document.querySelectorAll('#staff-list option');
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].getAttribute('data-name') === normalized) {
+        hiddenId.value = options[i].getAttribute('data-id') || '';
+        return;
+      }
+    }
+    hiddenId.value = '';
   }
 
   function setStatus(valor, mensaje, esError) {
@@ -59,9 +83,15 @@
     }
   }
 
+  function setAceptarHabilitado(enabled) {
+    var btnAceptar = document.getElementById('btn-aceptar-folio-rep');
+    if (btnAceptar) btnAceptar.disabled = !enabled;
+  }
+
   function resetCaptura() {
     folioActual = null;
     setStatus(null, '', false);
+    setAceptarHabilitado(false);
   }
 
   function setFolioActual(num, valor) {
@@ -76,7 +106,32 @@
     }
     folioActual = { NumFolio: num, Valor: valor };
     setStatus(valor, 'Folio listo.', false);
+    setAceptarHabilitado(true);
     return true;
+  }
+
+  function pintarPendientes() {
+    var tbody = document.getElementById('tbody-folios-rep');
+    if (!tbody) return;
+    if (foliosPendientes.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="2" class="empty-msg">No hay folios en la lista.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = foliosPendientes.map(function (f) {
+      return '<tr><td>' + f.NumFolio + '</td><td>' + f.Valor + '</td></tr>';
+    }).join('');
+  }
+
+  function aceptarFolio() {
+    if (!folioActual) return;
+    var existe = foliosPendientes.some(function (f) { return f.NumFolio === folioActual.NumFolio; });
+    if (existe) {
+      setStatus(folioActual.Valor, 'El folio ya está en la lista.', true);
+      return;
+    }
+    foliosPendientes.push({ NumFolio: folioActual.NumFolio, Valor: folioActual.Valor });
+    resetCaptura();
+    pintarPendientes();
   }
 
   function detenerCamara() {
@@ -148,12 +203,14 @@
     var tbody = document.getElementById('tbody-reparticion');
     var modal = document.getElementById('modal-reparticion');
     var inputStaff = document.getElementById('rep-staff');
+    var inputStaffId = document.getElementById('rep-staff-id');
     var inputFolio = document.getElementById('rep-folio-num');
     var inputValor = document.getElementById('rep-folio-valor');
     var btnNuevoStaff = document.getElementById('btn-nuevo-staff');
     var btnCapturar = document.getElementById('btn-capturar-folio-rep');
     var btnQR = document.getElementById('btn-qr-rep');
     var btnStop = document.getElementById('btn-stop-qr-rep');
+    var btnAceptar = document.getElementById('btn-aceptar-folio-rep');
 
     if (!form || !tbody) return;
 
@@ -172,18 +229,11 @@
     });
 
     if (inputStaff) {
+      inputStaff.addEventListener('input', function () {
+        syncStaffId(inputStaff, inputStaffId);
+      });
       inputStaff.addEventListener('blur', function () {
-        var val = inputStaff.value;
-        if (!val) return;
-        if (!isNaN(parseInt(val, 10))) return;
-        var normalized = normalizeText(val);
-        var options = document.querySelectorAll('#staff-list option');
-        for (var i = 0; i < options.length; i++) {
-          if (options[i].getAttribute('data-name') === normalized) {
-            inputStaff.value = options[i].value;
-            break;
-          }
-        }
+        syncStaffId(inputStaff, inputStaffId);
       });
     }
 
@@ -192,6 +242,12 @@
         var num = inputFolio ? parseInt(inputFolio.value, 10) : NaN;
         var valor = inputValor && inputValor.value ? parseInt(inputValor.value, 10) : null;
         setFolioActual(num, valor);
+      });
+    }
+
+    if (btnAceptar) {
+      btnAceptar.addEventListener('click', function () {
+        aceptarFolio();
       });
     }
 
@@ -209,24 +265,28 @@
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var idStaff = inputStaff && inputStaff.value ? parseInt(inputStaff.value, 10) : null;
-      var numFolio = folioActual ? folioActual.NumFolio : null;
-      var valorFolio = folioActual ? folioActual.Valor : null;
+      var idStaff = inputStaffId && inputStaffId.value ? parseInt(inputStaffId.value, 10) : null;
 
-      if (!idStaff || !numFolio || valorFolio == null) {
-        setStatus(null, 'Completa staff, folio y valor.', true);
+      if (!idStaff || foliosPendientes.length === 0) {
+        setStatus(null, 'Agrega folios antes de guardar.', true);
         return;
       }
 
-      window.MiTienda.supabase.folios.insert({
-        NumFolio: numFolio,
-        Valor: valorFolio
-      }).then(function (folio) {
-        var idFolio = folio && (folio.idFolio || folio.IdFolio || folio.idfolio) ? (folio.idFolio || folio.IdFolio || folio.idfolio) : null;
-        return window.MiTienda.supabase.reparticion.insert({ IdStaff: idStaff, idFolio: idFolio });
-      }).then(function () {
+      var tareas = foliosPendientes.map(function (f) {
+        return window.MiTienda.supabase.folios.insert({
+          NumFolio: f.NumFolio,
+          Valor: f.Valor
+        }).then(function (folio) {
+          var idFolio = folio && (folio.idFolio || folio.IdFolio || folio.idfolio) ? (folio.idFolio || folio.IdFolio || folio.idfolio) : null;
+          return window.MiTienda.supabase.reparticion.insert({ IdStaff: idStaff, idFolio: idFolio });
+        });
+      });
+
+      Promise.all(tareas).then(function () {
         form.reset();
         resetCaptura();
+        foliosPendientes = [];
+        pintarPendientes();
         cargarLista();
         if (modal && window.MiTienda.modal) {
           window.MiTienda.modal.close(modal);
@@ -247,6 +307,7 @@
 
     cargarStaff();
     cargarLista();
+    pintarPendientes();
   }
 
   if (document.readyState === 'loading') {
