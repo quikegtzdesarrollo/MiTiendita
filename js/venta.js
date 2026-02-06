@@ -161,7 +161,9 @@
             var valor = parseInt(parts[1], 10);
             if (!isNaN(num)) {
               var input = document.getElementById('venta-folio-num');
+              var inputVal = document.getElementById('venta-folio-valor');
               if (input) input.value = num;
+              if (inputVal) inputVal.value = !isNaN(valor) ? String(valor) : '';
               buscarFolio(num, isNaN(valor) ? null : valor);
               return;
             }
@@ -219,6 +221,7 @@
     var btnQR = document.getElementById('btn-qr');
     var btnStop = document.getElementById('btn-stop-qr');
     var inputFolio = document.getElementById('venta-folio-num');
+    var inputValor = document.getElementById('venta-folio-valor');
     var inputClub = document.getElementById('venta-club');
     var modal = document.getElementById('modal-venta');
     var openBtn = document.querySelector('[data-modal-target="#modal-venta"]');
@@ -226,7 +229,12 @@
     if (btnBuscar) {
       btnBuscar.addEventListener('click', function () {
         var num = inputFolio ? parseInt(inputFolio.value, 10) : NaN;
-        buscarFolio(num, null);
+        var valor = inputValor && inputValor.value ? parseInt(inputValor.value, 10) : null;
+        if (!valor) {
+          setStatus(null, 'Selecciona un valor.', true);
+          return;
+        }
+        buscarFolio(num, valor);
       });
     }
 

@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MiTienda - Venta</title>
-  <script>window.__CACHE_VERSION="20260205-6";</script>
-  <link rel="stylesheet" href="css/styles.css?v=20260205-6">
+  <script>window.__CACHE_VERSION="20260205-7";</script>
+  <link rel="stylesheet" href="css/styles.css?v=20260205-7">
 </head>
 <body>
   <div class="app">
@@ -73,6 +73,16 @@
               <label for="venta-folio-num">Folio</label>
               <input type="number" id="venta-folio-num" name="NumFolio" placeholder="Número de folio">
             </div>
+            <div class="form-group">
+              <label for="venta-folio-valor">Valor</label>
+              <select id="venta-folio-valor" name="Valor">
+                <option value="">Selecciona un valor</option>
+                <option value="1">1</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+              </select>
+            </div>
             <div class="inline-actions">
               <button type="button" class="btn btn-primary" id="btn-capturar-folio">Capturar folio</button>
               <button type="button" class="btn btn-secondary" id="btn-qr">Escanear QR</button>
@@ -118,12 +128,12 @@
   </div>
 
   <!-- Supabase: configura js/config.js para activar persistencia -->
-  <script src="js/config.js?v=20260205-6"></script>
+  <script src="js/config.js?v=20260205-7"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-  <script src="js/supabase.js?v=20260205-6"></script>
-  <script src="js/nav.js?v=20260205-6"></script>
-  <script src="js/modal.js?v=20260205-6"></script>
-  <script src="js/venta.js?v=20260205-6"></script>
+  <script src="js/supabase.js?v=20260205-7"></script>
+  <script src="js/nav.js?v=20260205-7"></script>
+  <script src="js/modal.js?v=20260205-7"></script>
+  <script src="js/venta.js?v=20260205-7"></script>
 </body>
 </html>
