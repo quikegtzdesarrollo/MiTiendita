@@ -51,7 +51,7 @@
       if (!staff || staff.length === 0) {
         setStaffStatus('No hay staff registrado.', true);
       } else {
-        setStaffStatus('', false);
+        setStaffStatus('Staff cargado: ' + staff.length, false);
       }
     }).catch(function (err) {
       console.error('Staff list:', err);
