@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MiTienda - Venta</title>
-  <script>window.__CACHE_VERSION="20260205-4";</script>
-  <link rel="stylesheet" href="css/styles.css?v=20260205-4">
+  <script>window.__CACHE_VERSION="20260205-6";</script>
+  <link rel="stylesheet" href="css/styles.css?v=20260205-6">
 </head>
 <body>
   <div class="app">
@@ -45,7 +45,7 @@
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th>Creado</th></tr>
+              <tr><th>Club</th><th>Creado</th></tr>
             </thead>
             <tbody id="tbody-venta"></tbody>
           </table>
@@ -65,8 +65,9 @@
             <h3>Captura de folios</h3>
             <div class="form-group">
               <label for="venta-club">Club (opcional)</label>
-              <input type="text" id="venta-club" name="idClub" placeholder="Busca un club" list="club-list" autocomplete="off">
-              <datalist id="club-list"></datalist>
+              <select id="venta-club" name="idClub">
+                <option value="">Selecciona un club</option>
+              </select>
             </div>
             <div class="form-group">
               <label for="venta-folio-num">Folio</label>
@@ -77,6 +78,7 @@
               <button type="button" class="btn btn-secondary" id="btn-qr">Escanear QR</button>
               <button type="button" class="btn btn-secondary" id="btn-stop-qr" disabled>Detener cámara</button>
             </div>
+            <p class="form-status">Formato QR: <strong>NumFolio|Valor</strong> (ej. 123|10).</p>
             <div class="qr-preview" id="qr-preview">
               <video id="qr-video" playsinline></video>
               <canvas id="qr-canvas" class="sr-only"></canvas>
@@ -116,12 +118,12 @@
   </div>
 
   <!-- Supabase: configura js/config.js para activar persistencia -->
-  <script src="js/config.js?v=20260205-4"></script>
+  <script src="js/config.js?v=20260205-6"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-  <script src="js/supabase.js?v=20260205-4"></script>
-  <script src="js/nav.js?v=20260205-4"></script>
-  <script src="js/modal.js?v=20260205-4"></script>
-  <script src="js/venta.js?v=20260205-4"></script>
+  <script src="js/supabase.js?v=20260205-6"></script>
+  <script src="js/nav.js?v=20260205-6"></script>
+  <script src="js/modal.js?v=20260205-6"></script>
+  <script src="js/venta.js?v=20260205-6"></script>
 </body>
 </html>

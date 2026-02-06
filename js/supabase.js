@@ -142,12 +142,39 @@
    */
   function listReparticion() {
     if (useSupabase()) {
-      return supabase.from('Reparticion')
-        .select('IdReparticion,FechaMod,IdStaff,idFolio,Staff:IdStaff(Nombre),Folios:idFolio(NumFolio,Valor)')
-        .order('IdReparticion', { ascending: true })
-        .then(function (r) {
-        if (r.error) throw r.error;
-        return r.data || [];
+      var baseQuery = supabase.from('Reparticion')
+        .select('IdReparticion,FechaMod,IdStaff,idFolio')
+        .order('IdReparticion', { ascending: true });
+
+      return Promise.all([
+        baseQuery.then(function (r) {
+          if (r.error) throw r.error;
+          return r.data || [];
+        }),
+        supabase.from('Staff').select('idStaff,Nombre').then(function (r) {
+          if (r.error) throw r.error;
+          return r.data || [];
+        }),
+        supabase.from('Folios').select('idFolio,NumFolio,Valor').then(function (r) {
+          if (r.error) throw r.error;
+          return r.data || [];
+        })
+      ]).then(function (results) {
+        var repartos = results[0];
+        var staff = results[1];
+        var folios = results[2];
+        return repartos.map(function (r) {
+          var staffRow = staff.find(function (s) { return s.idStaff === r.IdStaff; }) || null;
+          var folioRow = folios.find(function (f) { return f.idFolio === r.idFolio; }) || null;
+          return {
+            IdReparticion: r.IdReparticion,
+            FechaMod: r.FechaMod,
+            IdStaff: r.IdStaff,
+            idFolio: r.idFolio,
+            Staff: staffRow ? { Nombre: staffRow.Nombre } : null,
+            Folios: folioRow ? { NumFolio: folioRow.NumFolio, Valor: folioRow.Valor } : null
+          };
+        });
       });
     }
     var enriched = memory.Reparticion.map(function (r) {
@@ -223,9 +250,31 @@
    */
   function listVenta() {
     if (useSupabase()) {
-      return supabase.from('Venta').select('*').order('idVenta', { ascending: true }).then(function (r) {
-        if (r.error) throw r.error;
-        return r.data || [];
+      var baseQuery = supabase.from('Venta')
+        .select('idVenta,idClub,created_at')
+        .order('idVenta', { ascending: true });
+
+      return Promise.all([
+        baseQuery.then(function (r) {
+          if (r.error) throw r.error;
+          return r.data || [];
+        }),
+        supabase.from('Club').select('idClub,Nombre').then(function (r) {
+          if (r.error) throw r.error;
+          return r.data || [];
+        })
+      ]).then(function (results) {
+        var ventas = results[0];
+        var clubs = results[1];
+        return ventas.map(function (v) {
+          var clubRow = clubs.find(function (c) { return c.idClub === v.idClub; }) || null;
+          return {
+            idVenta: v.idVenta,
+            idClub: v.idClub,
+            created_at: v.created_at,
+            Club: clubRow ? { Nombre: clubRow.Nombre } : null
+          };
+        });
       });
     }
     return Promise.resolve(memory.Venta.slice());

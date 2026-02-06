@@ -11,11 +11,12 @@
   function pintarVentas(tbody, datos) {
     if (!tbody) return;
     if (!datos || datos.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="1" class="empty-msg">No hay registros.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="2" class="empty-msg">No hay registros.</td></tr>';
       return;
     }
     tbody.innerHTML = datos.map(function (r) {
-      return '<tr><td>' + (r.created_at || '') + '</td></tr>';
+      var clubNombre = r.Club && r.Club.Nombre ? r.Club.Nombre : (r.idClub != null ? ('Club ' + r.idClub) : '');
+      return '<tr><td>' + clubNombre + '</td><td>' + (r.created_at || '') + '</td></tr>';
     }).join('');
   }
 
@@ -66,7 +67,7 @@
     setAceptarHabilitado(false);
   }
 
-  function buscarFolio(num) {
+  function buscarFolio(num, valorEsperado) {
     resetCaptura();
     if (!num && num !== 0) {
       setStatus(null, 'Ingresa un folio válido.', true);
@@ -79,6 +80,10 @@
       }
       if (folio.IdVenta != null) {
         setStatus(folio.Valor, 'Este folio ya fue utilizado.', true);
+        return;
+      }
+      if (valorEsperado != null && folio.Valor != null && parseInt(valorEsperado, 10) !== parseInt(folio.Valor, 10)) {
+        setStatus(folio.Valor, 'El valor no coincide con el folio.', true);
         return;
       }
       folioActual = folio;
@@ -150,13 +155,18 @@
         var code = window.jsQR(imageData.data, canvas.width, canvas.height);
         if (code && code.data) {
           detenerCamara();
-          var num = parseInt(code.data, 10);
-          if (!isNaN(num)) {
-            var input = document.getElementById('venta-folio-num');
-            if (input) input.value = num;
-            buscarFolio(num);
-            return;
+          var parts = String(code.data).split('|');
+          if (parts.length >= 2) {
+            var num = parseInt(parts[0], 10);
+            var valor = parseInt(parts[1], 10);
+            if (!isNaN(num)) {
+              var input = document.getElementById('venta-folio-num');
+              if (input) input.value = num;
+              buscarFolio(num, isNaN(valor) ? null : valor);
+              return;
+            }
           }
+          setStatus(null, 'Formato de QR inválido. Usa "NumFolio|Valor".', true);
         }
       }
     }
@@ -186,21 +196,16 @@
     });
   }
 
-  function normalizeText(text) {
-    return String(text || '').toLowerCase().trim();
-  }
-
   function cargarClubes() {
-    var list = document.getElementById('club-list');
-    if (!list) return;
+    var select = document.getElementById('venta-club');
+    if (!select) return;
     window.MiTienda.supabase.club.list().then(function (clubs) {
-      list.innerHTML = '';
-      clubs.forEach(function (c) {
+      select.innerHTML = '<option value="">Selecciona un club</option>';
+      (clubs || []).forEach(function (c) {
         var opt = document.createElement('option');
         opt.value = String(c.idClub);
-        opt.label = c.Nombre || ('Club ' + c.idClub);
-        opt.setAttribute('data-name', normalizeText(c.Nombre));
-        list.appendChild(opt);
+        opt.textContent = c.Nombre || ('Club ' + c.idClub);
+        select.appendChild(opt);
       });
     }).catch(function (err) {
       console.error('Club list:', err);
@@ -221,7 +226,7 @@
     if (btnBuscar) {
       btnBuscar.addEventListener('click', function () {
         var num = inputFolio ? parseInt(inputFolio.value, 10) : NaN;
-        buscarFolio(num);
+        buscarFolio(num, null);
       });
     }
 
@@ -253,22 +258,6 @@
       openBtn.addEventListener('click', function () {
         resetCaptura();
         pintarCompra();
-      });
-    }
-
-    if (inputClub) {
-      inputClub.addEventListener('blur', function () {
-        var val = inputClub.value;
-        if (!val) return;
-        if (!isNaN(parseInt(val, 10))) return;
-        var normalized = normalizeText(val);
-        var options = document.querySelectorAll('#club-list option');
-        for (var i = 0; i < options.length; i++) {
-          if (options[i].getAttribute('data-name') === normalized) {
-            inputClub.value = options[i].value;
-            break;
-          }
-        }
       });
     }
 
