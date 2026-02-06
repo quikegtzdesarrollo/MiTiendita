@@ -10,11 +10,14 @@
 
   function pintarTabla(tbody, datos) {
     if (!datos || datos.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="1" class="empty-msg">No hay registros.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-msg">No hay registros.</td></tr>';
       return;
     }
     tbody.innerHTML = datos.map(function (r) {
-      return '<tr><td>' + (r.FechaMod || '') + '</td></tr>';
+      var staffNombre = r.Staff && r.Staff.Nombre ? r.Staff.Nombre : (r.IdStaff != null ? ('Staff ' + r.IdStaff) : '');
+      var numFolio = r.Folios && r.Folios.NumFolio != null ? r.Folios.NumFolio : (r.idFolio != null ? r.idFolio : '');
+      var valor = r.Folios && r.Folios.Valor != null ? r.Folios.Valor : '';
+      return '<tr><td>' + staffNombre + '</td><td>' + numFolio + '</td><td>' + valor + '</td><td>' + (r.FechaMod || '') + '</td></tr>';
     }).join('');
   }
 

@@ -142,12 +142,27 @@
    */
   function listReparticion() {
     if (useSupabase()) {
-      return supabase.from('Reparticion').select('*').order('IdReparticion', { ascending: true }).then(function (r) {
+      return supabase.from('Reparticion')
+        .select('IdReparticion,FechaMod,IdStaff,idFolio,Staff:IdStaff(Nombre),Folios:idFolio(NumFolio,Valor)')
+        .order('IdReparticion', { ascending: true })
+        .then(function (r) {
         if (r.error) throw r.error;
         return r.data || [];
       });
     }
-    return Promise.resolve(memory.Reparticion.slice());
+    var enriched = memory.Reparticion.map(function (r) {
+      var staff = memory.Staff.find(function (s) { return s.idStaff === r.IdStaff; }) || null;
+      var folio = memory.Folios.find(function (f) { return f.idFolio === r.idFolio; }) || null;
+      return {
+        IdReparticion: r.IdReparticion,
+        FechaMod: r.FechaMod,
+        IdStaff: r.IdStaff,
+        idFolio: r.idFolio,
+        Staff: staff ? { Nombre: staff.Nombre } : null,
+        Folios: folio ? { NumFolio: folio.NumFolio, Valor: folio.Valor } : null
+      };
+    });
+    return Promise.resolve(enriched);
   }
 
   function insertReparticion(row) {
