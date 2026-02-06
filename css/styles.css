@@ -176,6 +176,31 @@ body {
   color: var(--orange-500);
 }
 
+.folio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.folio-card {
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--gray-200);
+  background: var(--white);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.06);
+}
+
+.folio-card .folio-label {
+  font-size: 0.8rem;
+  color: var(--gray-500);
+}
+
+.folio-card .folio-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--blue-800);
+}
+
 .icon-btn {
   width: 42px;
   height: 42px;

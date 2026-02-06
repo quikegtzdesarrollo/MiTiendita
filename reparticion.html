@@ -67,11 +67,11 @@
               <div class="form-group">
                 <label for="rep-staff">Staff</label>
                 <div class="form-row">
-                  <input type="text" id="rep-staff" name="StaffNombre" placeholder="Busca un staff" list="staff-list" autocomplete="off" required>
-                  <input type="hidden" id="rep-staff-id" name="IdStaff">
+                  <select id="rep-staff" name="IdStaff" required>
+                    <option value="">Selecciona un staff</option>
+                  </select>
                   <button type="button" class="btn btn-secondary" id="btn-nuevo-staff">Nuevo staff</button>
                 </div>
-                <datalist id="staff-list"></datalist>
               </div>
               <div class="form-group">
                 <label for="rep-folio-num">Folio</label>
@@ -110,14 +110,7 @@
           </div>
           <div class="section-form">
             <h3>Folios por asignar</h3>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr><th>Folio</th><th>Valor</th></tr>
-                </thead>
-                <tbody id="tbody-folios-rep"></tbody>
-              </table>
-            </div>
+            <div class="folio-grid" id="folios-grid-rep"></div>
           </div>
           <div class="modal-actions">
             <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>

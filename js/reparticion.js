@@ -29,48 +29,20 @@
     });
   }
 
-  function normalizeText(text) {
-    return String(text || '').toLowerCase().trim();
-  }
-
   function cargarStaff() {
-    var list = document.getElementById('staff-list');
-    if (!list) return;
+    var select = document.getElementById('rep-staff');
+    if (!select) return;
     window.MiTienda.supabase.staff.list().then(function (staff) {
-      list.innerHTML = '';
+      select.innerHTML = '<option value="">Selecciona un staff</option>';
       staff.forEach(function (s) {
         var opt = document.createElement('option');
-        var nombre = s.Nombre || ('Staff ' + s.idStaff);
-        opt.value = nombre;
-        opt.setAttribute('data-id', String(s.idStaff));
-        opt.setAttribute('data-name', normalizeText(nombre));
-        list.appendChild(opt);
+        opt.value = String(s.idStaff);
+        opt.textContent = s.Nombre || ('Staff ' + s.idStaff);
+        select.appendChild(opt);
       });
     }).catch(function (err) {
       console.error('Staff list:', err);
     });
-  }
-  function syncStaffId(inputStaff, hiddenId) {
-    if (!inputStaff || !hiddenId) return;
-    var val = inputStaff.value;
-    if (!val) {
-      hiddenId.value = '';
-      return;
-    }
-    var numeric = parseInt(val, 10);
-    if (!isNaN(numeric) && String(numeric) === String(val).trim()) {
-      hiddenId.value = String(numeric);
-      return;
-    }
-    var normalized = normalizeText(val);
-    var options = document.querySelectorAll('#staff-list option');
-    for (var i = 0; i < options.length; i++) {
-      if (options[i].getAttribute('data-name') === normalized) {
-        hiddenId.value = options[i].getAttribute('data-id') || '';
-        return;
-      }
-    }
-    hiddenId.value = '';
   }
 
   function setStatus(valor, mensaje, esError) {
@@ -111,14 +83,19 @@
   }
 
   function pintarPendientes() {
-    var tbody = document.getElementById('tbody-folios-rep');
-    if (!tbody) return;
+    var grid = document.getElementById('folios-grid-rep');
+    if (!grid) return;
     if (foliosPendientes.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="2" class="empty-msg">No hay folios en la lista.</td></tr>';
+      grid.innerHTML = '<p class="empty-msg">No hay folios en la lista.</p>';
       return;
     }
-    tbody.innerHTML = foliosPendientes.map(function (f) {
-      return '<tr><td>' + f.NumFolio + '</td><td>' + f.Valor + '</td></tr>';
+    grid.innerHTML = foliosPendientes.map(function (f) {
+      return '<div class="folio-card">' +
+        '<div class="folio-label">Folio</div>' +
+        '<div class="folio-value">' + f.NumFolio + '</div>' +
+        '<div class="folio-label">Valor</div>' +
+        '<div class="folio-value">' + f.Valor + '</div>' +
+      '</div>';
     }).join('');
   }
 
@@ -203,7 +180,6 @@
     var tbody = document.getElementById('tbody-reparticion');
     var modal = document.getElementById('modal-reparticion');
     var inputStaff = document.getElementById('rep-staff');
-    var inputStaffId = document.getElementById('rep-staff-id');
     var inputFolio = document.getElementById('rep-folio-num');
     var inputValor = document.getElementById('rep-folio-valor');
     var btnNuevoStaff = document.getElementById('btn-nuevo-staff');
@@ -227,15 +203,6 @@
         cargarStaff();
       }
     });
-
-    if (inputStaff) {
-      inputStaff.addEventListener('input', function () {
-        syncStaffId(inputStaff, inputStaffId);
-      });
-      inputStaff.addEventListener('blur', function () {
-        syncStaffId(inputStaff, inputStaffId);
-      });
-    }
 
     if (btnCapturar) {
       btnCapturar.addEventListener('click', function () {
@@ -265,7 +232,7 @@
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var idStaff = inputStaffId && inputStaffId.value ? parseInt(inputStaffId.value, 10) : null;
+      var idStaff = inputStaff && inputStaff.value ? parseInt(inputStaff.value, 10) : null;
 
       if (!idStaff || foliosPendientes.length === 0) {
         setStatus(null, 'Agrega folios antes de guardar.', true);
