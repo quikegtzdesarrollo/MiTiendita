@@ -113,6 +113,7 @@
               return;
             }
           }
+          setStatus(null, 'Formato de QR inválido. Usa "NumFolio|Valor".', true);
         }
       }
     }

@@ -75,11 +75,22 @@
                 <label for="rep-folio-num">Folio</label>
                 <input type="number" id="rep-folio-num" name="NumFolio" placeholder="Número de folio" required>
               </div>
+              <div class="form-group">
+                <label for="rep-folio-valor">Valor</label>
+                <select id="rep-folio-valor" name="Valor" required>
+                  <option value="">Selecciona un valor</option>
+                  <option value="1">1</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
               <div class="inline-actions">
                 <button type="button" class="btn btn-primary" id="btn-capturar-folio-rep">Capturar folio</button>
                 <button type="button" class="btn btn-secondary" id="btn-qr-rep">Escanear QR</button>
                 <button type="button" class="btn btn-secondary" id="btn-stop-qr-rep" disabled>Detener cámara</button>
               </div>
+              <p class="form-status">Formato QR: <strong>NumFolio|Valor</strong> (ej. 123|10).</p>
               <div class="qr-preview" id="qr-preview-rep">
                 <video id="qr-video-rep" playsinline></video>
                 <canvas id="qr-canvas-rep" class="sr-only"></canvas>
