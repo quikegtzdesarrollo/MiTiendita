@@ -29,19 +29,34 @@
     });
   }
 
+  function setStaffStatus(msg, isError) {
+    var el = document.getElementById('staff-status');
+    if (!el) return;
+    el.textContent = msg || '';
+    el.classList.toggle('error', !!isError);
+  }
+
   function cargarStaff() {
     var select = document.getElementById('rep-staff');
     if (!select) return;
+    setStaffStatus('Cargando staff...', false);
     window.MiTienda.supabase.staff.list().then(function (staff) {
       select.innerHTML = '<option value="">Selecciona un staff</option>';
-      staff.forEach(function (s) {
+      (staff || []).forEach(function (s) {
         var opt = document.createElement('option');
         opt.value = String(s.idStaff);
         opt.textContent = s.Nombre || ('Staff ' + s.idStaff);
         select.appendChild(opt);
       });
+      if (!staff || staff.length === 0) {
+        setStaffStatus('No hay staff registrado.', true);
+      } else {
+        setStaffStatus('', false);
+      }
     }).catch(function (err) {
       console.error('Staff list:', err);
+      var msg = err && err.message ? err.message : 'No se pudo cargar staff.';
+      setStaffStatus(msg, true);
     });
   }
 
