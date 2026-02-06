@@ -272,6 +272,12 @@ body {
   border-radius: 8px;
   font-size: 0.9rem;
   background: var(--white);
+  color: var(--gray-900);
+  appearance: none;
+}
+
+.form-group select option {
+  color: var(--gray-900);
 }
 
 .form-group textarea {
