@@ -8,11 +8,12 @@
   var staffPorFolio = {};
   var stream = null;
   var scanActive = false;
+  var ventasCache = [];
 
   function pintarVentas(tbody, datos) {
     if (!tbody) return;
     if (!datos || datos.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="empty-msg">No hay registros.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-msg">No hay registros.</td></tr>';
       return;
     }
     tbody.innerHTML = datos.map(function (r) {
@@ -20,19 +21,64 @@
       var staffNombre = r.Staff && r.Staff.Nombre ? r.Staff.Nombre : '';
       var numFolio = r.Folios && r.Folios.NumFolio != null ? r.Folios.NumFolio : '';
       var valor = r.Folios && r.Folios.Valor != null ? r.Folios.Valor : '';
-      return '<tr><td>' + clubNombre + '</td><td>' + (r.Concepto || '') + '</td><td>' + staffNombre + '</td><td>' + numFolio + '</td><td>' + valor + '</td><td>' + (r.created_at || '') + '</td></tr>';
+      return '<tr><td>' + clubNombre + '</td><td>' + (r.Concepto || '') + '</td><td>' + staffNombre + '</td><td>' + numFolio + '</td><td>' + valor + '</td><td>' + (r.created_at || '') + '</td><td><button class="btn btn-secondary btn-delete" data-id="' + r.idVenta + '">Eliminar</button></td></tr>';
     }).join('');
+  }
+
+  function aplicarFiltros() {
+    var tbody = document.getElementById('tbody-venta');
+    var filtroClub = document.getElementById('filtro-club');
+    var filtroStaff = document.getElementById('filtro-staff');
+    var clubVal = filtroClub ? filtroClub.value : '';
+    var staffVal = filtroStaff ? filtroStaff.value : '';
+    var filtradas = ventasCache.filter(function (v) {
+      var clubOk = !clubVal || String(v.idClub) === String(clubVal);
+      var staffId = v.Staff && v.Staff.idStaff ? v.Staff.idStaff : null;
+      var staffOk = !staffVal || String(staffId) === String(staffVal);
+      return clubOk && staffOk;
+    });
+    pintarVentas(tbody, filtradas);
   }
 
   function cargarVentas() {
     var tbody = document.getElementById('tbody-venta');
     if (!tbody) return;
     window.MiTienda.supabase.venta.list().then(function (datos) {
-      pintarVentas(tbody, datos);
+      ventasCache = datos || [];
+      cargarFiltros(ventasCache);
+      aplicarFiltros();
     }).catch(function (err) {
       console.error('Venta list:', err);
       pintarVentas(tbody, []);
     });
+  }
+
+  function cargarFiltros(datos) {
+    var filtroClub = document.getElementById('filtro-club');
+    var filtroStaff = document.getElementById('filtro-staff');
+    if (filtroClub) {
+      var clubes = {};
+      (datos || []).forEach(function (v) {
+        if (v.idClub != null) {
+          clubes[String(v.idClub)] = v.Club && v.Club.Nombre ? v.Club.Nombre : ('Club ' + v.idClub);
+        }
+      });
+      filtroClub.innerHTML = '<option value="">Todos</option>' + Object.keys(clubes).map(function (id) {
+        return '<option value="' + id + '">' + clubes[id] + '</option>';
+      }).join('');
+    }
+    if (filtroStaff) {
+      var staff = {};
+      (datos || []).forEach(function (v) {
+        var st = v.Staff;
+        if (st && st.idStaff != null) {
+          staff[String(st.idStaff)] = st.Nombre || ('Staff ' + st.idStaff);
+        }
+      });
+      filtroStaff.innerHTML = '<option value="">Todos</option>' + Object.keys(staff).map(function (id) {
+        return '<option value="' + id + '">' + staff[id] + '</option>';
+      }).join('');
+    }
   }
 
   function pintarCompra() {
@@ -261,6 +307,29 @@
     var inputClub = document.getElementById('venta-club');
     var modal = document.getElementById('modal-venta');
     var openBtn = document.querySelector('[data-modal-target="#modal-venta"]');
+    var filtroClub = document.getElementById('filtro-club');
+    var filtroStaff = document.getElementById('filtro-staff');
+    var tbody = document.getElementById('tbody-venta');
+    if (tbody) {
+      tbody.addEventListener('click', function (e) {
+        var btn = e.target.closest('.btn-delete');
+        if (!btn) return;
+        var id = parseInt(btn.getAttribute('data-id'), 10);
+        if (!id) return;
+        if (!window.confirm('¿Eliminar esta venta?')) return;
+        window.MiTienda.supabase.venta.delete(id).then(function () {
+          cargarVentas();
+        }).catch(function (err) {
+          console.error('Venta delete:', err);
+        });
+      });
+    }
+    if (filtroClub) {
+      filtroClub.addEventListener('change', aplicarFiltros);
+    }
+    if (filtroStaff) {
+      filtroStaff.addEventListener('change', aplicarFiltros);
+    }
 
     if (btnBuscar) {
       btnBuscar.addEventListener('click', function () {

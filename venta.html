@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MiTienda - Venta</title>
-  <script>window.__CACHE_VERSION="20260205-10";</script>
-  <link rel="stylesheet" href="css/styles.css?v=20260205-10">
+  <script>window.__CACHE_VERSION="20260205-11";</script>
+  <link rel="stylesheet" href="css/styles.css?v=20260205-11">
 </head>
 <body>
   <div class="app">
@@ -42,10 +42,28 @@
       </section>
 
       <section>
+        <div class="section-form">
+          <h3>Filtros</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="filtro-club">Club</label>
+              <select id="filtro-club">
+                <option value="">Todos</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="filtro-staff">Staff</label>
+              <select id="filtro-staff">
+                <option value="">Todos</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th>Club</th><th>Concepto</th><th>Staff</th><th>Folio</th><th>Valor</th><th>Creado</th></tr>
+              <tr><th>Club</th><th>Concepto</th><th>Staff</th><th>Folio</th><th>Valor</th><th>Creado</th><th>Acciones</th></tr>
             </thead>
             <tbody id="tbody-venta"></tbody>
           </table>
@@ -132,12 +150,12 @@
   </div>
 
   <!-- Supabase: configura js/config.js para activar persistencia -->
-  <script src="js/config.js?v=20260205-10"></script>
+  <script src="js/config.js?v=20260205-11"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-  <script src="js/supabase.js?v=20260205-10"></script>
-  <script src="js/nav.js?v=20260205-10"></script>
-  <script src="js/modal.js?v=20260205-10"></script>
-  <script src="js/venta.js?v=20260205-10"></script>
+  <script src="js/supabase.js?v=20260205-11"></script>
+  <script src="js/nav.js?v=20260205-11"></script>
+  <script src="js/modal.js?v=20260205-11"></script>
+  <script src="js/venta.js?v=20260205-11"></script>
 </body>
 </html>

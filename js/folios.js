@@ -7,11 +7,11 @@
 
   function pintarTabla(tbody, datos) {
     if (!datos || datos.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="3" class="empty-msg">No hay registros.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-msg">No hay registros.</td></tr>';
       return;
     }
     tbody.innerHTML = datos.map(function (r) {
-      return '<tr><td>' + (r.NumFolio || '') + '</td><td>' + (r.Valor != null ? r.Valor : '') + '</td><td>' + (r.FechaCompra || '') + '</td></tr>';
+      return '<tr><td>' + (r.NumFolio || '') + '</td><td>' + (r.Valor != null ? r.Valor : '') + '</td><td>' + (r.FechaCompra || '') + '</td><td><button class="btn btn-secondary btn-delete" data-id="' + r.idFolio + '">Eliminar</button></td></tr>';
     }).join('');
   }
 
@@ -47,6 +47,19 @@
     var openBtn = document.querySelector('[data-modal-target="#modal-folios"]');
     var modal = document.getElementById('modal-folios');
     if (!form || !tbody) return;
+
+    tbody.addEventListener('click', function (e) {
+      var btn = e.target.closest('.btn-delete');
+      if (!btn) return;
+      var id = parseInt(btn.getAttribute('data-id'), 10);
+      if (!id) return;
+      if (!window.confirm('¿Eliminar este folio?')) return;
+      window.MiTienda.supabase.folios.delete(id).then(function () {
+        cargarLista();
+      }).catch(function (err) {
+        console.error('Folios delete:', err);
+      });
+    });
 
     if (fechaInput) {
       fechaInput.value = new Date().toISOString().slice(0, 10);

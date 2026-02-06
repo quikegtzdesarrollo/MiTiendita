@@ -67,6 +67,7 @@
     return Promise.resolve(item);
   }
 
+
   /**
    * Folios - tabla public."Folios"
    * Campos: idFolio, NumFolio, Valor, IdVenta, FechaCompra
@@ -114,6 +115,17 @@
     };
     memory.Folios.push(item);
     return Promise.resolve(item);
+  }
+
+  function deleteFolios(idFolio) {
+    if (useSupabase()) {
+      return supabase.from('Folios').delete().eq('idFolio', idFolio).then(function (r) {
+        if (r.error) throw r.error;
+        return true;
+      });
+    }
+    memory.Folios = memory.Folios.filter(function (f) { return f.idFolio !== idFolio; });
+    return Promise.resolve(true);
   }
 
   function updateFoliosVentaByIds(ids, idVenta) {
@@ -213,6 +225,17 @@
     return Promise.resolve(item);
   }
 
+  function deleteReparticion(idReparticion) {
+    if (useSupabase()) {
+      return supabase.from('Reparticion').delete().eq('IdReparticion', idReparticion).then(function (r) {
+        if (r.error) throw r.error;
+        return true;
+      });
+    }
+    memory.Reparticion = memory.Reparticion.filter(function (r) { return r.IdReparticion !== idReparticion; });
+    return Promise.resolve(true);
+  }
+
   /**
    * Staff - tabla public."Staff"
    * Campos: idStaff, Nombre, created_at
@@ -242,6 +265,17 @@
     };
     memory.Staff.push(item);
     return Promise.resolve(item);
+  }
+
+  function deleteStaff(idStaff) {
+    if (useSupabase()) {
+      return supabase.from('Staff').delete().eq('idStaff', idStaff).then(function (r) {
+        if (r.error) throw r.error;
+        return true;
+      });
+    }
+    memory.Staff = memory.Staff.filter(function (s) { return s.idStaff !== idStaff; });
+    return Promise.resolve(true);
   }
 
   /**
@@ -293,7 +327,7 @@
             created_at: v.created_at,
             Club: clubRow ? { Nombre: clubRow.Nombre } : null,
             Folios: folioRow ? { NumFolio: folioRow.NumFolio, Valor: folioRow.Valor } : null,
-            Staff: staffRow ? { Nombre: staffRow.Nombre } : null
+            Staff: staffRow ? { idStaff: staffRow.idStaff, Nombre: staffRow.Nombre } : null
           };
         });
       });
@@ -318,14 +352,25 @@
     return Promise.resolve(item);
   }
 
+  function deleteVenta(idVenta) {
+    if (useSupabase()) {
+      return supabase.from('Venta').delete().eq('idVenta', idVenta).then(function (r) {
+        if (r.error) throw r.error;
+        return true;
+      });
+    }
+    memory.Venta = memory.Venta.filter(function (v) { return v.idVenta !== idVenta; });
+    return Promise.resolve(true);
+  }
+
   window.MiTienda = window.MiTienda || {};
   window.MiTienda.supabase = {
     getClient: function () { return supabase; },
     useSupabase: useSupabase,
     club: { list: listClub, insert: insertClub },
-    folios: { list: listFolios, insert: insertFolios, getByNum: getFolioByNum, updateVentaByIds: updateFoliosVentaByIds },
-    reparticion: { list: listReparticion, insert: insertReparticion },
-    staff: { list: listStaff, insert: insertStaff },
-    venta: { list: listVenta, insert: insertVenta }
+    folios: { list: listFolios, insert: insertFolios, getByNum: getFolioByNum, updateVentaByIds: updateFoliosVentaByIds, delete: deleteFolios },
+    reparticion: { list: listReparticion, insert: insertReparticion, delete: deleteReparticion },
+    staff: { list: listStaff, insert: insertStaff, delete: deleteStaff },
+    venta: { list: listVenta, insert: insertVenta, delete: deleteVenta }
   };
 })();

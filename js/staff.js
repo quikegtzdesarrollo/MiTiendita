@@ -5,11 +5,11 @@
 (function () {
   function pintarTabla(tbody, datos) {
     if (!datos || datos.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="2" class="empty-msg">No hay registros.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="3" class="empty-msg">No hay registros.</td></tr>';
       return;
     }
     tbody.innerHTML = datos.map(function (r) {
-      return '<tr><td>' + (r.Nombre || '') + '</td><td>' + (r.created_at || '') + '</td></tr>';
+      return '<tr><td>' + (r.Nombre || '') + '</td><td>' + (r.created_at || '') + '</td><td><button class="btn btn-secondary btn-delete" data-id="' + r.idStaff + '">Eliminar</button></td></tr>';
     }).join('');
   }
 
@@ -31,6 +31,19 @@
     var statusEl = document.getElementById('staff-status');
     var btnGuardar = document.getElementById('btn-guardar-staff');
     if (!form || !tbody) return;
+
+    tbody.addEventListener('click', function (e) {
+      var btn = e.target.closest('.btn-delete');
+      if (!btn) return;
+      var id = parseInt(btn.getAttribute('data-id'), 10);
+      if (!id) return;
+      if (!window.confirm('¿Eliminar este staff?')) return;
+      window.MiTienda.supabase.staff.delete(id).then(function () {
+        cargarLista();
+      }).catch(function (err) {
+        console.error('Staff delete:', err);
+      });
+    });
 
     function setStatus(msg, isError) {
       if (!statusEl) return;
