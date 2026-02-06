@@ -12,12 +12,15 @@
   function pintarVentas(tbody, datos) {
     if (!tbody) return;
     if (!datos || datos.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="3" class="empty-msg">No hay registros.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-msg">No hay registros.</td></tr>';
       return;
     }
     tbody.innerHTML = datos.map(function (r) {
       var clubNombre = r.Club && r.Club.Nombre ? r.Club.Nombre : (r.idClub != null ? ('Club ' + r.idClub) : '');
-      return '<tr><td>' + clubNombre + '</td><td>' + (r.Concepto || '') + '</td><td>' + (r.created_at || '') + '</td></tr>';
+      var staffNombre = r.Staff && r.Staff.Nombre ? r.Staff.Nombre : '';
+      var numFolio = r.Folios && r.Folios.NumFolio != null ? r.Folios.NumFolio : '';
+      var valor = r.Folios && r.Folios.Valor != null ? r.Folios.Valor : '';
+      return '<tr><td>' + clubNombre + '</td><td>' + (r.Concepto || '') + '</td><td>' + staffNombre + '</td><td>' + numFolio + '</td><td>' + valor + '</td><td>' + (r.created_at || '') + '</td></tr>';
     }).join('');
   }
 

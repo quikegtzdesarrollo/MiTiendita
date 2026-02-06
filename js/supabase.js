@@ -262,18 +262,38 @@
         supabase.from('Club').select('idClub,Nombre').then(function (r) {
           if (r.error) throw r.error;
           return r.data || [];
+        }),
+        supabase.from('Folios').select('idFolio,NumFolio,Valor,IdVenta').then(function (r) {
+          if (r.error) throw r.error;
+          return r.data || [];
+        }),
+        supabase.from('Reparticion').select('idFolio,IdStaff').then(function (r) {
+          if (r.error) throw r.error;
+          return r.data || [];
+        }),
+        supabase.from('Staff').select('idStaff,Nombre').then(function (r) {
+          if (r.error) throw r.error;
+          return r.data || [];
         })
       ]).then(function (results) {
         var ventas = results[0];
         var clubs = results[1];
+        var folios = results[2];
+        var repartos = results[3];
+        var staff = results[4];
         return ventas.map(function (v) {
           var clubRow = clubs.find(function (c) { return c.idClub === v.idClub; }) || null;
+          var folioRow = folios.find(function (f) { return f.IdVenta === v.idVenta; }) || null;
+          var repartoRow = folioRow ? (repartos.find(function (r) { return r.idFolio === folioRow.idFolio; }) || null) : null;
+          var staffRow = repartoRow ? (staff.find(function (s) { return s.idStaff === repartoRow.IdStaff; }) || null) : null;
           return {
             idVenta: v.idVenta,
             idClub: v.idClub,
             Concepto: v.Concepto,
             created_at: v.created_at,
-            Club: clubRow ? { Nombre: clubRow.Nombre } : null
+            Club: clubRow ? { Nombre: clubRow.Nombre } : null,
+            Folios: folioRow ? { NumFolio: folioRow.NumFolio, Valor: folioRow.Valor } : null,
+            Staff: staffRow ? { Nombre: staffRow.Nombre } : null
           };
         });
       });
