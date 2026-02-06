@@ -64,27 +64,19 @@
     setStatus(null, '', false);
   }
 
-  function buscarFolio(num, valorEsperado) {
+  function setFolioActual(num, valor) {
     resetCaptura();
     if (!num && num !== 0) {
       setStatus(null, 'Ingresa un folio válido.', true);
-      return;
+      return false;
     }
-    window.MiTienda.supabase.folios.getByNum(num).then(function (folio) {
-      if (!folio) {
-        setStatus(null, 'Folio no encontrado.', true);
-        return;
-      }
-      if (valorEsperado != null && folio.Valor != null && parseInt(valorEsperado, 10) !== parseInt(folio.Valor, 10)) {
-        setStatus(folio.Valor, 'El valor no coincide con el folio.', true);
-        return;
-      }
-      folioActual = folio;
-      setStatus(folio.Valor, 'Folio listo.', false);
-    }).catch(function (err) {
-      console.error('Buscar folio:', err);
-      setStatus(null, 'Error al consultar folio.', true);
-    });
+    if (valor == null || isNaN(valor)) {
+      setStatus(null, 'Selecciona un valor.', true);
+      return false;
+    }
+    folioActual = { NumFolio: num, Valor: valor };
+    setStatus(valor, 'Folio listo.', false);
+    return true;
   }
 
   function detenerCamara() {
@@ -117,7 +109,7 @@
               var inputVal = document.getElementById('rep-folio-valor');
               if (input) input.value = num;
               if (inputVal) inputVal.value = !isNaN(valor) ? String(valor) : '';
-              buscarFolio(num, isNaN(valor) ? null : valor);
+              setFolioActual(num, isNaN(valor) ? null : valor);
               return;
             }
           }
@@ -198,11 +190,7 @@
       btnCapturar.addEventListener('click', function () {
         var num = inputFolio ? parseInt(inputFolio.value, 10) : NaN;
         var valor = inputValor && inputValor.value ? parseInt(inputValor.value, 10) : null;
-        if (!valor) {
-          setStatus(null, 'Selecciona un valor.', true);
-          return;
-        }
-        buscarFolio(num, valor);
+        setFolioActual(num, valor);
       });
     }
 
@@ -221,14 +209,21 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var idStaff = inputStaff && inputStaff.value ? parseInt(inputStaff.value, 10) : null;
-      var idFolio = folioActual ? folioActual.idFolio : null;
+      var numFolio = folioActual ? folioActual.NumFolio : null;
+      var valorFolio = folioActual ? folioActual.Valor : null;
 
-      if (!idStaff || !idFolio) {
-        setStatus(null, 'Completa staff y folio.', true);
+      if (!idStaff || !numFolio || valorFolio == null) {
+        setStatus(null, 'Completa staff, folio y valor.', true);
         return;
       }
 
-      window.MiTienda.supabase.reparticion.insert({ IdStaff: idStaff, idFolio: idFolio }).then(function () {
+      window.MiTienda.supabase.folios.insert({
+        NumFolio: numFolio,
+        Valor: valorFolio
+      }).then(function (folio) {
+        var idFolio = folio && (folio.idFolio || folio.IdFolio || folio.idfolio) ? (folio.idFolio || folio.IdFolio || folio.idfolio) : null;
+        return window.MiTienda.supabase.reparticion.insert({ IdStaff: idStaff, idFolio: idFolio });
+      }).then(function () {
         form.reset();
         resetCaptura();
         cargarLista();
@@ -237,6 +232,7 @@
         }
       }).catch(function (err) {
         console.error('Reparticion insert:', err);
+        setStatus(null, 'No se pudo registrar la repartición.', true);
       });
     });
 
