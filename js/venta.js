@@ -5,18 +5,19 @@
 (function () {
   var foliosCompra = [];
   var folioActual = null;
+  var staffPorFolio = {};
   var stream = null;
   var scanActive = false;
 
   function pintarVentas(tbody, datos) {
     if (!tbody) return;
     if (!datos || datos.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="2" class="empty-msg">No hay registros.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="3" class="empty-msg">No hay registros.</td></tr>';
       return;
     }
     tbody.innerHTML = datos.map(function (r) {
       var clubNombre = r.Club && r.Club.Nombre ? r.Club.Nombre : (r.idClub != null ? ('Club ' + r.idClub) : '');
-      return '<tr><td>' + clubNombre + '</td><td>' + (r.created_at || '') + '</td></tr>';
+      return '<tr><td>' + clubNombre + '</td><td>' + (r.Concepto || '') + '</td><td>' + (r.created_at || '') + '</td></tr>';
     }).join('');
   }
 
@@ -36,12 +37,12 @@
     var btnConfirmar = document.getElementById('btn-confirmar-compra');
     if (!tbody) return;
     if (foliosCompra.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="2" class="empty-msg">No hay folios en la compra.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-msg">No hay folios en la compra.</td></tr>';
       if (btnConfirmar) btnConfirmar.disabled = true;
       return;
     }
     tbody.innerHTML = foliosCompra.map(function (f) {
-      return '<tr><td>' + f.NumFolio + '</td><td>' + (f.Valor != null ? f.Valor : '') + '</td></tr>';
+      return '<tr><td>' + f.NumFolio + '</td><td>' + (f.Valor != null ? f.Valor : '') + '</td><td>' + (f.StaffNombre || '') + '</td><td>' + (f.Fecha || '') + '</td></tr>';
     }).join('');
     if (btnConfirmar) btnConfirmar.disabled = false;
   }
@@ -102,22 +103,54 @@
       setStatus(folioActual.Valor, 'El folio ya está en la compra.', true);
       return;
     }
+    var staffNombre = staffPorFolio[folioActual.idFolio] || '';
     foliosCompra.push({
       idFolio: folioActual.idFolio,
       NumFolio: folioActual.NumFolio,
-      Valor: folioActual.Valor
+      Valor: folioActual.Valor,
+      StaffNombre: staffNombre,
+      Fecha: folioActual.FechaCompra || ''
     });
     resetCaptura();
     pintarCompra();
+  }
+  function cargarStaffPorFolio() {
+    if (!window.MiTienda || !window.MiTienda.supabase) return;
+    window.MiTienda.supabase.reparticion.list().then(function (repartos) {
+      staffPorFolio = {};
+      (repartos || []).forEach(function (r) {
+        if (r && r.idFolio != null) {
+          var nombre = r.Staff && r.Staff.Nombre ? r.Staff.Nombre : '';
+          staffPorFolio[r.idFolio] = nombre;
+        }
+      });
+      // refresca la vista si ya hay folios en la compra
+      if (foliosCompra.length > 0) {
+        foliosCompra = foliosCompra.map(function (f) {
+          return {
+            idFolio: f.idFolio,
+            NumFolio: f.NumFolio,
+            Valor: f.Valor,
+            Fecha: f.Fecha,
+            StaffNombre: staffPorFolio[f.idFolio] || f.StaffNombre || ''
+          };
+        });
+        pintarCompra();
+      }
+    }).catch(function () {
+      // no bloquear la captura si falla
+    });
   }
 
   function confirmarCompra() {
     if (foliosCompra.length === 0) return;
     var idClubVal = document.getElementById('venta-club');
     var idClub = idClubVal && idClubVal.value ? parseInt(idClubVal.value, 10) : null;
+    var conceptoEl = document.getElementById('venta-concepto');
+    var concepto = conceptoEl ? conceptoEl.value.trim() : '';
     var ids = foliosCompra.map(function (f) { return f.idFolio; });
 
-    window.MiTienda.supabase.venta.insert({ idClub: idClub }).then(function (venta) {
+    window.MiTienda.supabase.venta.insert({ idClub: idClub, Concepto: concepto || null }).then(function (venta) {
       var nuevoId = venta && venta.idVenta ? venta.idVenta : null;
       return window.MiTienda.supabase.folios.updateVentaByIds(ids, nuevoId).then(function () {
         foliosCompra = [];
@@ -266,6 +299,7 @@
       openBtn.addEventListener('click', function () {
         resetCaptura();
         pintarCompra();
+        cargarStaffPorFolio();
       });
     }
 

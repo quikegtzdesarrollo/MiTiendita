@@ -251,7 +251,7 @@
   function listVenta() {
     if (useSupabase()) {
       var baseQuery = supabase.from('Venta')
-        .select('idVenta,idClub,created_at')
+        .select('idVenta,idClub,Concepto,created_at')
         .order('idVenta', { ascending: true });
 
       return Promise.all([
@@ -271,6 +271,7 @@
           return {
             idVenta: v.idVenta,
             idClub: v.idClub,
+            Concepto: v.Concepto,
             created_at: v.created_at,
             Club: clubRow ? { Nombre: clubRow.Nombre } : null
           };

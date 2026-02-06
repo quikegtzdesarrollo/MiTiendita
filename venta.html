@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MiTienda - Venta</title>
-  <script>window.__CACHE_VERSION="20260205-7";</script>
-  <link rel="stylesheet" href="css/styles.css?v=20260205-7">
+  <script>window.__CACHE_VERSION="20260205-9";</script>
+  <link rel="stylesheet" href="css/styles.css?v=20260205-9">
 </head>
 <body>
   <div class="app">
@@ -45,7 +45,7 @@
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th>Club</th><th>Creado</th></tr>
+              <tr><th>Club</th><th>Concepto</th><th>Creado</th></tr>
             </thead>
             <tbody id="tbody-venta"></tbody>
           </table>
@@ -68,6 +68,10 @@
               <select id="venta-club" name="idClub">
                 <option value="">Selecciona un club</option>
               </select>
+            </div>
+            <div class="form-group">
+              <label for="venta-concepto">Concepto</label>
+              <input type="text" id="venta-concepto" name="Concepto" placeholder="Concepto de la venta">
             </div>
             <div class="form-group">
               <label for="venta-folio-num">Folio</label>
@@ -109,7 +113,7 @@
             <div class="table-wrap">
               <table>
                 <thead>
-                  <tr><th>Folio</th><th>Valor</th></tr>
+                  <tr><th>NumFolio</th><th>Valor</th><th>Staff</th><th>Fecha</th></tr>
                 </thead>
                 <tbody id="tbody-folios-compra"></tbody>
               </table>
@@ -128,12 +132,12 @@
   </div>
 
   <!-- Supabase: configura js/config.js para activar persistencia -->
-  <script src="js/config.js?v=20260205-7"></script>
+  <script src="js/config.js?v=20260205-9"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-  <script src="js/supabase.js?v=20260205-7"></script>
-  <script src="js/nav.js?v=20260205-7"></script>
-  <script src="js/modal.js?v=20260205-7"></script>
-  <script src="js/venta.js?v=20260205-7"></script>
+  <script src="js/supabase.js?v=20260205-9"></script>
+  <script src="js/nav.js?v=20260205-9"></script>
+  <script src="js/modal.js?v=20260205-9"></script>
+  <script src="js/venta.js?v=20260205-9"></script>
 </body>
 </html>
